@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang=es>
+<head>
+<script>
+var oracles = {
+  "Respuesta simple": [
+    "Sí",
+    "No exactamente",
+    "No"
+  ],
+  "Complicación": [ 
+    "Obstáculo",
+    "Conflicto",
+    "Amenaza",
+    "Disputa",
+    "Puzzle",
+    "Interacción"
+  ],
+  "Elemento": [
+    "Agua",
+    "Fuego",
+    "Aire",
+    "Tierra",
+    "Viento",
+    "Carne",
+    "Alma"
+  ],
+  "Aspecto": [
+    "Enigmático",
+    "Conflicto",
+    "Exótico",
+    "Antiguo",
+    "Siniestro",
+    "Sagrado"
+  ],
+  "PNJ (respuesta)": [
+    "Respuesta positiva",
+    "Cambio de humor",
+    "Respuesta negativa"
+  ],
+  "PNJ (cambio de humor)": [
+    "Siente curiosidad",
+    "Se preocupa",
+    "Se asusta",
+    "Se enfada",
+    "Actúa de forma agresiva"
+  ],
+  "Motivación (verbo)": [
+    "Destruir",
+    "Liberar",
+    "Revelar",
+    "Encontrar",
+    "Controlar",
+    "Proteger"
+  ],
+  "Motivación (objeto)": [
+    "Lugar",
+    "Cosa",
+    "Persona",
+    "Energia",
+    "Secreto",
+    "Paz"
+  ]
+};
+
+function getRandom(array) {
+  return array[Math.floor((Math.random()*array.length))];
+}
+
+function init() {
+  var parent = document.querySelector("#oracles");
+  
+  const ul = document.createElement("ul");
+  parent.appendChild(ul);
+  
+  console.log('generating results...');
+  
+  for ([title, opts] of Object.entries(oracles)) {
+    const li = document.createElement("li");
+    const result = getRandom(opts);
+    ul.appendChild(li);
+    
+    // title
+    var thold = document.createElement("strong");
+    thold.appendChild(document.createTextNode(title));
+    li.appendChild(thold); 
+    // result
+    var rhold = document.createElement("em");
+    rhold.appendChild(document.createTextNode(result));
+    li.appendChild(rhold);
+    
+    console.log("\t", title, "-", result);
+  }
+}
+
+</script>
+<style>
+#oracles li * {
+  font-size: 2rem;
+}
+#oracles li strong {
+  display: inline-block;
+  min-width: 30rem;
+}
+</style>
+<meta charset=utf-8>
+<title>Oraculo Simple</title>
+</head>
+<body onload="init()">
+  <h1>Oraculos</h1>
+  <div id="oracles"></div>
+</body>
+</html>
