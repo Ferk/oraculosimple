@@ -1,0 +1,15 @@
+{
+  "name": "Oráculos Web",
+  "short_name": "Oráculos",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#db8",
+  "description": "Una página con oráculos para consultar y obtener ideas en juegos narrativos.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><text y='15' font-size='16'>🎲</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
