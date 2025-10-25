@@ -1,617 +1,71 @@
 <!doctype html>
-<html lang=es>
-<head>
-  <meta charset=utf-8>
-  <script>
-var oracles = {
-  "Sí/No?": [
-    "Sí, y...",
-    "Sí",
-    "Sí, pero...",
-    "No, pero...",
-    "No",
-    "No, y...",
-  ],
-  "Complicación": [ 
-    "Obstáculo",
-    "Conflicto",
-    "Amenaza",
-    "Disputa",
-    "Puzzle",
-    "Interacción"
-  ],
-  "Elemento": [
-    "Agua",
-    "Fuego",
-    "Aire",
-    "Tierra",
-    "Viento",
-    "Carne",
-    "Alma"
-  ],
-  "Aspecto": [
-    "Enigmático",
-    "Conflicto",
-    "Exótico",
-    "Antiguo",
-    "Siniestro",
-    "Sagrado"
-  ],
-  "Reacción NPC": [
-    "Respuesta Positiva",
-    "Respuesta Negativa",
-    [
-      "Siente curiosidad",
-      "Siente indiferencia",
-      "Siente desconfianza",
-      "Se preocupa",
-      "Se asusta",
-      "Se enfada",
-      "Se entristece",
-      "Muestra agresividad",
-      "Muestra cansancio"
-    ]
-  ],
-  "Motivación": [
-    { value:"_ lugar", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ objeto", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ persona", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ energía", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ secreto", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ paz", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ riqueza", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ familia", args:[{oracle:"Verbo",types:["CD"]}]},
-    { value:"_ salud", args:[{oracle:"Verbo",types:["CD"]}]},
-  ],
-  "Emojis": [
-    { value: "_ \u2060_  \u2060_ \u2060_ \u2060_  \u2060_ \u2060_",
-      args: [ {oracle:".emoji"},{oracle:".emoji"},{oracle:".emoji"},{oracle:".emoji"},{oracle:".emoji"},{oracle:".emoji"},{oracle:".emoji"} ]
-    }
-  ],
-  "Acontecimiento": [
-    { value: "Una _ _ _ una _ _", args: [ { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] }, { oracle:"Verbo", types:["CD"] }, { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] } ] },
-    { value: "Un _ _ _ un _ _", args: [ { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] }, { oracle:"Verbo", types:["CD"] }, { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] } ] },
-    { value: "Un _ _ _ una _ _", args: [ { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] }, { oracle:"Verbo", types:["CD"] }, { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] } ] },
-    { value: "Una _ _ _ un _ _", args: [ { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] }, { oracle:"Verbo", types:["CD"] }, { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] } ] },
-    { value: "Una _ _ _ de manera _", args: [ { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] }, { oracle:"Verbo", types:["IT"] }, { oracle:"Adjetivo", types:["F","A"] } ] },
-    { value: "Un _ _ _ de manera _", args: [ { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] }, { oracle:"Verbo", types:["IT"] }, { oracle:"Adjetivo", types:["F","A"] } ] },
-    { value: "Una _ _ _ de modo _", args: [ { oracle:"Sustantivo", types:["F","A"] }, { oracle:"Adjetivo", types:["F","A"] }, { oracle:"Verbo", types:["IT"] }, { oracle:"Adjetivo", types:["M","A"] } ] },
-    { value: "Un _ _ _ de modo _", args: [ { oracle:"Sustantivo", types:["M","A"] }, { oracle:"Adjetivo", types:["M","A"] }, { oracle:"Verbo", types:["IT"] }, { oracle:"Adjetivo", types:["M","A"] } ] },
-  ],
+<!-- - - - - - - - - - - - - - - - - - - - -
+   - This page is
+   - - - - - - - - - - - - - - - - - - - - - -->
+<html>
+    <head>
+        <title>One HTML Oracle</title>
+        <style>
+            body,
+            html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                overflow: hidden;
+            }
+            #content-frame {
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+            .lang-selector {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                z-index: 1000;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 5px;
+                padding: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                font-size: 18px;
+            }
+            .lang-selector a {
+                margin: 0 3px;
+                text-decoration: none;
+                color: #333;
+            }
+            .lang-selector a:hover {
+                color: #000;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Floating language selector -->
+        <div class="lang-selector">
+            <a href="#" onclick="loadLang('en')" title="English">🇬🇧</a>
+            <a href="#" onclick="loadLang('es')" title="Español">🇪🇸</a>
+        </div>
 
-  "Señuelo": [
-    { value: "_ a _ de la región, se cree que _",
-      args: [
-        [
-          "Una enfermedad afecta",
-          "Algo amenaza",
-          "El pueblo sospecha que algo le pasa",
-        ],
-        [
-          "un lider",
-          "una lider",
-          "los niños",
-          "los ancianos",
-          "la vegetación",
-          "las criaturas",
-          "la ganadería",
-          "los cultivos",
-          "un árbol centenario",
-          "un ser querido",
-          "los pájaros",
-        ],
-        [
-          "existe una maldición",
-          "un alquimista realiza experimentos",
-          "vientos emponzoñados provienen de la montaña",
-          "hay algo raro en el agua",
-          "se debe a los dioses/religión",
-          "es obra de cultistas",
-          "una organización criminal está detrás",
-          "un legendario curandero podría ayudar",
-          "una rara medicina podría ser la cura",
-        ],
-      ]
-    },
-    { value: "_ _ necesita ayuda para _",
-      args: [
-        [ "un mercader", "un vagabundo", "un niño", "un anciano", "un artesano", "un sabio", "un aventurero", "un hermitaño", "un foragido", "un mercenario" ],
-        [ "perdido", "que perdió la memoria", "bajo una maldición", "con un misterioso poder", "caido en desgracia", "en peligro", "herido", "con un oscuro pasado", "de pocas palabras", "muy temeroso", "muy nervioso", "encapuchado", "bastante fornido" ],
-        [ "regresar a su hogar", "encontrar su familia", "atravesar una zona peligrosa", "recuperar un objeto", "vengarse de un enemigo", "desacer un entuerto", "recuperar su fortuna", "encontrar algo que siempre ha querido" ]
-      ]
-    },
-    { value: "Una persona moribunda, _, pide _ y antes de morir ofrece _",
-      args: [
-        [
-          "traicionada por su grupo de aventureros",
-          "junto a una copa de licor envenenado",
-          "atacada por una banda criminal",
-          "envenenada por una criatura peligrosa",
-          "apaleada al intentar liberar su grupo de esclavos",
-        ],
-        [
-          "venganza",
-          "ayuda",
-          "proteger su familia"
-        ],
-        [
-          "un mapa",
-          "el nombre de una persona",
-          "la dirección de su hogar",
-          "su leal mascota como guía",
-        ]
-      ]
-    },
-    { value: "Explorando los restos de _, _",
-      args: [
-        [
-          "una vieja cabaña",
-          "un extraño altar",
-          "unas ruinas derruidas",
-          "una mansión en ruinas",
-          "una vivienda abandonada",
-          "un refugio subterraneo",
-          "una misteriosa estatua",
-        ],
-        [
-          "una trampa os atrapa en el interior de una mazmorra",
-          "activas una entrada secreta, la curiosidad te empuja a explorarla",
-          "encuentras un mapa que apunta un destino desconocido",
-          "encuentras el diario de un investigador, parecen faltar páginas",
-          "encuentras un libro en un idioma que desconoces, podrás descifrarlo?",
-          "encuentras un sobre sellado, buscarás su destinatario?",
-          { value: "activas un mecanismo/maldición que provoca _", args: [{oracle:"Calamidad"}] },
-          { value: "descubres una entrada a _", args: [{oracle:"Mazmorra"}] },
-        ]
-      ]
-    },
-    { value: "Una _ criatura _, siguiéndola encuentras _",
-      args: [
-        { oracle:"Adjetivo", types:["F","A"] },
-        [
-          "te roba un objeto valioso",
-          "secuestra a alguien de la ciudad",
-          "ha acumulado un gran tesoro",
-          "necesita tu ayuda",
-          "porta un valioso objeto",
-          { value: "clave para librar al pueblo de _", args: [{oracle:"Calamidad"}] }
-        ],
-        { oracle:"Mazmorra" },
-      ]
-    },
-    { value: "Al _, se revela la entrada a _, _",
-      args: [
-        [ "trillar el campo",
-          "ocurrir un gran terremoto",
-          "drenarse el agua por sequía",
-          "desplomarse un antiguo edificio",
-          "caer en un hoyo un aldeano",
-          "caer un árbol en una tormenta",
-          "excabar para los cimientos de un edificio",
-          "buscar la procedencia de un extraño sonido",
-          "jugar unos niños en la proximidades del bosque",
-          "explorar los niños de la aldea una cueva cercana"
-        ],
-        { oracle:"Mazmorra" },
-        [
-          "la aldea os pide que investigueis",
-          "hay rumores de un tesoro oculto",
-          "peligrosas criaturas resurgen de ella",
-        ]
+        <!-- Full-page iframe -->
+        <iframe id="content-frame" src="1h-oracle.en.html"></iframe>
 
-      ]
-    },
-    { value: "_ busca aventureros para _",
-      args: [
-        [
-          "Un miembro de la realeza",
-          "Un rico y famoso mercader",
-          "Un experto artesano",
-          "La guardia real",
-          "Una organización rebelde",
-          "Un grupo de aldeanos",
-          "Un lider religioso",
-        ],
-        [
-          "una misión clandestina contra un enemigo",
-          "descubrir a un espía y averiguar sus planes",
-          "servir de escolta",
-          "encontrar una rara materia prima",
-          "proteger a un ser querido",
-          "recuperar artefactos robados",
-          "llevar de aventuras a un prometedor aspirante",
-          "limpiar su nombre que ha sido desprestigiado",
-          "entregar un paquete cruzando tierras peligrosas",
-          { value:"evitar el peligro de _", args: [{oracle:"Calamidad"}] },
-          { value:"investigar los rumores en relación a _", args: [{oracle:"Mazmorra"}] },
-        ]
-      ]
-    }
-  ],
+        <script>
+            const userLang = navigator.language || navigator.userLanguage;
+            const langCode = userLang.split("-")[0];
 
-  "Rumor": [
-    { value: "alguien descubrió la entrada a _ en _, _",
-      args: [
-        {oracle:"Mazmorra"},
-        {oracle:"Región"},
-        [
-          "donde mora una criatura legendaria",
-          "albergando un tesoro",
-          "nadie se atreve a explorarla",
-          "extraños sonidos proceden de ella",
-          "un extraño olor emana de ella"
-        ]
-      ]
-    },
-    { value: "_, en _, se encuentra _",
-      args: [
-        {oracle:"Proximidad"},
-        {oracle:"Asentamiento"},
-        [
-          "un poderoso guerrero",
-          "un legendario artesano",
-          "un mercader con grandes riquezas",
-          "un alquimísta muy famoso",
-          "un sabio con grandes conocimientos",
-          "un grupo de criminales muy temidos",
-          "un noble muy poderoso"
-        ]
-      ]
-    },
-    { value: "_ recae sobre _ en _",
-      args: [{oracle:"Calamidad"}, {oracle:"Asentamiento"}, {oracle:"Región"},
-      ]
-    }
-  ],
+            // Use the corresponding file for each supported language
+            const langMap = {
+                en: "1h-oracle.en.html",
+                es: "1h-oracle.es.html",
+            };
+            function loadLang(lang) {
+                const pageToLoad = langMap[lang] || langMap.en;
+                document.getElementById("content-frame").src = pageToLoad;
+            }
 
-  "Mazmorra": [
-    { type: "M", value: "un refugio subterraneo" },
-    { type: "F", value: "unas catacumbas" },
-    { type: "F", value: "un calabozo" },
-    { type: "F", value: "una gruta subterranea" },
-    { type: "M", value: "un portal que conduce a otro plano/mundo" },
-    { type: "F", value: "una ciudad en ruinas" },
-    { type: "F", value: "una base abandonada" },
-    { type: "M", value: "un enorme laberinto" },
-    { type: "M", value: "un templo a una deidad olvidada" },
-    { type: "F", value: "unas ruinas de origen desconocido" },
-    { type: "F", value: "una antigua tumba llena de trampas" },
-    { type: "M", value: "un gran almacén/taller protegido por artefactos peligrosos" },
-    { type: "F", value: "una cámara mortuoria" },
-    { type: "F", value: "una mina abandonada" },
-    { type: "F", value: "una cueva pantanosa" },
-    { type: "F", value: "unas laberínticas cloacas" },
-    { type: "F", value: "una vieja prisión" },
-    { type: "F", value: "una antigua fàbrica o laboratorio" },
-    { type: "M", value: "un antiguo cuartel lleno de pasadizos" },
-  ],
-
-  "Calamidad": [
-    "hambruna",
-    "sequía",
-    "enfermedad",
-    "pobreza",
-    "inundación",
-    "incendio",
-    "huracán",
-    "locura",
-    "fanatísmo",
-    "vandalismo",
-    "invasiones",
-    "clima extremo",
-  ],
-
-  "Región": [
-    "la costa",
-    "el bosque",
-    "las afueras de la ciudad",
-    "las cloacas",
-    "las montañas",
-    "las praderas",
-    "las colinas",
-    "el pantano",
-  ],
-
-  "Asentamiento": [
-    "una aldea",
-    "una villa",
-    "una pueblo",
-    "una ciudad",
-    "un fuerte",
-    "una fortaleza",
-    "un castillo",
-    "un puesto de avanzada",
-    "un campamento de trabajo",
-    "un campamento de refugiados",
-    "un campamento militar",
-    "un grupo de cabañas",
-    "unas pocas chozas",
-    "un campamento abandonado",
-    "un puesto de mercaderes",
-    "una acampada de nómadas",
-  ],
-
-  "Proximidad": [
-    "no muy lejos",
-    { value: "atravesando _", args: [{oracle:"Región"}] },
-    "a varios dias de camino",
-  ],
-
-  "Alineación": {
-    value: "_ _",
-    args: [
-      ["legal", "neutral", "caótico" ],
-      ["bueno", "neutral", "maligno" ],
-    ]
-  },
-
-  "Verbo": [
-    { type: "CD", value: "revela" },
-    { type: "CD", value: "oculta" },
-    { type: "CD", value: "destruye" },
-    { type: "CD", value: "defiende" },
-    { type: "CD", value: "desafía" },
-    { type: "CD", value: "contraresta" },
-    { type: "CD", value: "facilita" },
-    { type: "CD", value: "obstruye" },
-    { type: "CD", value: "incorpora" },
-    { type: "CD", value: "empuja" },
-    { type: "CD", value: "evita" },
-    { type: "CD", value: "dificulta" },
-    { type: "CD", value: "hace posible" },
-    { type: "CD", value: "comprende" },
-    { type: "CD", value: "causa" },
-    { type: "IT", value: "irrumpe" },
-    { type: "IT", value: "desaparece" },
-    { type: "IT", value: "explota" },
-    { type: "IT", value: "aumenta" },
-    { type: "IT", value: "disminuye" },
-    { type: "IT", value: "se aproxima" },
-    { type: "IT", value: "se transforma" },
-    { type: "IT", value: "se calma" },
-    { type: "IT", value: "se agita" },
-    { type: "IT", value: "se confunde" },
-    { type: "IT", value: "se escapa" },
-    { type: "IT", value: "se descubre" },
-    { type: "IT", value: "se oculta" },
-    { type: "IT", value: "pasa desapercibido" },
-  ],
-
-  "Adjetivo": [
-    { type: "F", value: "desoladora" },
-    { type: "M", value: "desolador" },
-    { type: "F", value: "esperanzadora" },
-    { type: "M", value: "esperanzador" },
-    { type: "A", value: "inestable" },
-    { type: "A", value: "estable" },
-    { type: "A", value: "amigable" },
-    { type: "F", value: "siniestra" },
-    { type: "M", value: "siniestro" },
-    { type: "F", value: "incómoda" },
-    { type: "M", value: "incómodo" },
-    { type: "A", value: "sobrenatural" },
-    { type: "A", value: "inocente" },
-    { type: "A", value: "frágil" },
-    { type: "F", value: "peligrosa" },
-    { type: "M", value: "peligroso" },
-    { type: "F", value: "prohibida" },
-    { type: "M", value: "prohibido" },
-    { type: "F", value: "traviesa" },
-    { type: "M", value: "travieso" },
-    { type: "F", value: "poderosa" },
-    { type: "M", value: "poderoso" },
-    { type: "F", value: "misteriosa" },
-    { type: "M", value: "misterioso" },
-    { type: "F", value: "silenciosa" },
-    { type: "M", value: "silencioso" },
-    { type: "F", value: "inquieta" },
-    { type: "M", value: "inquieto" },
-    { type: "F", value: "amistosa" },
-    { type: "M", value: "amistoso" },
-  ],
-
-  "Sustantivo": [
-    { type: "F", value: "oscuridad" },
-    { type: "M", value: "viento" },
-    { type: "F", value: "economía" },
-    { type: "M", value: "ecosistema" },
-    { type: "F", value: "comunidad" },
-    { type: "M", value: "cambio" },
-    { type: "F", value: "tormenta" },
-    { type: "M", value: "diálogo" },
-    { type: "F", value: "sabiduría" },
-    { type: "M", value: "terreno" },
-    { type: "F", value: "sorpresa" },
-    { type: "M", value: "control" },
-    { type: "F", value: "trampa" },
-    { type: "M", value: "sonido" },
-    { type: "F", value: "arma" },
-    { type: "M", value: "objeto" },
-    { type: "F", value: "criatura" },
-    { type: "M", value: "documento" },
-    { type: "F", value: "recompensa" },
-    { type: "M", value: "obstáculo" },
-    { type: "F", value: "persona" },
-    { type: "M", value: "grupo" },
-    { type: "F", value: "energía" },
-    { type: "M", value: "lugar" },
-    { type: "F", value: "paz" },
-    { type: "M", value: "secreto" },
-    { type: "F", value: "ventaja" },
-    { type: "M", value: "desperdicio" },
-  ],
-
-  ".emoji": [
-    "😀","😃","😄","😁","😆","😅","😂","🤣","🥲","🥹","☺️","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🥸","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😮‍💨","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🫣","🤗","🫡","🤔","🫢","🤭","🤫","🤥","😶","😶‍🌫️","😐","😑","😬","🫠","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","😵‍💫","🫥","🤐","🥴","🤢","🤮","🤧","😷","🤕","🤑","🤠","😈","👿","👹","👺","🤡","💩","👻","💀","☠️","👽","👾","🤖","🎃","😺","😸","😹","😻","😼","😽","🙀","😿","😾","👋","🤚","🖐","✋","🖖","👌","🤌","🤏","✌️","🤞","🫰","🤟","🤘","🤙","🫵","🫱","🫲","🫳","🫴","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🫶","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦵","🦿","🦶","👣","👂","🦻","👃","🫀","🫁","🧠","🦷","🦴","👀","👁","👅","👄","🫦","💋","🩸","👶","👧","🧒","👦","👩","🧑","👨","👩‍🦱","🧑‍🦱","👨‍🦱","👩‍🦰","🧑‍🦰","👨‍🦰","👱‍♀️","👱","👱‍♂️","👩‍🦳","🧑‍🦳","👨‍🦳","👩‍🦲","🧑‍🦲","👨‍🦲","🧔‍♀️","🧔","🧔‍♂️","👵","🧓","👴","👲","👳‍♀️","👳","🧕","👮‍♀️","👮","👮‍♂️","👷‍♀️","👷","👷‍♂️","💂‍♀️","💂","💂‍♂️","🕵️‍♀️","🕵️","🕵️‍♂️","👩‍⚕️","🧑‍⚕️","👨‍⚕️","👩‍🌾","👩‍🍳","🧑‍🍳","👨‍🍳","👩‍🎓","🧑‍🎓","👨‍🎓","👩‍🎤","🧑‍🎤","👨‍🎤","👩‍🏫","🧑‍🏫","👨‍🏫","👩‍🏭","🧑‍🏭","👨‍🏭","👩‍💻","🧑‍💻","👨‍💻","👩‍💼","🧑‍💼","👨‍💼","👩‍🔧","🧑‍🔧","👨‍🔧","👩‍🔬","🧑‍🔬","👨‍🔬","👩‍🎨","🧑‍🎨","👨‍🎨","👩‍🚒","🧑‍🚒","👨‍🚒","👩‍✈️","🧑‍✈️","👨‍✈️","👩‍🚀","🧑‍🚀","👨‍🚀","👩‍⚖️","🧑‍⚖️","👨‍⚖️","👰‍♀️","👰","👰‍♂️","🤵‍♀️","🤵","🤵‍♂️","👸","🫅","🤴","🥷","🦸‍♀️","🦸","🦸‍♂️","🦹‍♀️","🦹","🦹‍♂️","🤶","🧑‍🎄","🎅","🧙‍♀️","🧙","🧙‍♂️","🧝‍♀️","🧝","🧝‍♂️","🧟‍♀️","🧟","🧟‍♂️","🧞‍♀️","🧞","🧞‍♂️","🧜‍♀️","🧜","🧜‍♂️","🧚‍♀️","🧚","🧚‍♂️","🧌","👼","🤰","🫄","🫃","🤱","👩‍🍼","🧑‍🍼","👨‍🍼","🙇‍♀️","🙇","🙇‍♂️","💁‍♀️","💁","💁‍♂️","🙅‍♀️","🙅","🙅‍♂️","🙆‍♀️","🙆","🙆‍♂️","🙋‍♀️","🙋","🙋‍♂️","🧏‍♀️","🧏","🧏‍♂️","🤦‍♀️","🤦","🤦‍♂️","🤷‍♀️","🤷","🤷‍♂️","🙎‍♀️","🙎","🙎‍♂️","🙍‍♀️","🙍","🙍‍♂️","💇‍♀️","💇","💇‍♂️","💆‍♀️","💆","💆‍♂️","🧖‍♀️","🧖","🧖‍♂️","💅","🤳","💃","🕺","👯‍♀️","👯","👯‍♂️","🕴","👩‍🦽","🧑‍🦽","👨‍🦽","👩‍🦼","🧑‍🦼","👨‍🦼","🚶‍♀️","🚶","🚶‍♂️","👩‍🦯","🧑‍🦯","👨‍🦯","🧎‍♀️","🧎","🧎‍♂️","🏃‍♀️","🏃","🏃‍♂️","🧍‍♀️","🧍","🧍‍♂️","👭","🧑‍🤝‍🧑","👬","👫","👩‍❤️‍👩","💑","👨‍❤️‍👨","👩‍❤️‍👨","👩‍❤️‍💋‍👩","💏","👨‍❤️‍💋‍👨","👩‍❤️‍💋‍👨","👪","👨‍👩‍👦","👨‍👩‍👧","👨‍👩‍👧‍👦","👨‍👩‍👦‍👦","👨‍👩‍👧‍👧","👨‍👨‍👦","👨‍👨‍👧","👨‍👨‍👧‍👦","👨‍👨‍👦‍👦","👨‍👨‍👧‍👧","👩‍👩‍👦","👩‍👩‍👧","👩‍👩‍👧‍👦","👩‍👩‍👦‍👦","👩‍👩‍👧‍👧","👨‍👦","👨‍👦‍👦","👨‍👧","👨‍👧‍👦","👨‍👧‍👧","👩‍👦","👩‍👦‍👦","👩‍👧","👩‍👧‍👦","👩‍👧‍👧","🗣","👤","👥","🫂","🧳","🌂","☂️","🧵","🪡","🪢","🧶","👓","🥽","🥼","🦺","👔","👕","👖","🧣","🧤","🧥","🧦","👗","👘","🥻","🩴","🩱","🩲","🩳","👙","👚","👛","👜","👝","🎒","👞","👟","🥾","🥿","👠","👡","🩰","👢","👑","👒","🎩","🎓","🧢","⛑","🪖","💄","💍","💼","🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐻‍❄️","🐨","🐯","🦁","🐮","🐷","🐽","🐸","🐵","🙈","🙉","🙊","🐒","🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🪱","🐛","🦋","🐌","🐞","🐜","🪰","🪲","🪳","🦟","🦗","🕷","🕸","🦂","🐢","🐍","🦎","🦖","🦕","🐙","🦞","🦀","🪸","🐡","🐠","🐟","🐬","🐳","🐋","🐊","🐅","🐆","🦓","🦍","🦧","🦣","🐘","🦛","🦏","🐪","🐫","🦒","🦘","🦬","🐃","🐂","🐄","🐎","🐖","🐏","🐑","🦙","🐐","🦌","🐕","🐩","🦮","🐕‍🦺","🐈","🐈‍⬛","🪶","🐓","🦃","🦤","🦚","🦜","🦢","🦩","🕊","🐇","🦝","🦨","🦡","🦫","🦦","🦥","🐁","🐀","🐿","🦔","🐾","🐉","🐲","🌵","🎄","🌲","🌳","🌴","🪹","🪺","🪵","🌱","🌿","☘️","🍀","🎍","🪴","🎋","🍃","🍂","🍁","🍄","🐚","🪨","🌾","💐","🌷","🪷","🌹","🥀","🌺","🌸","🌼","🌻","🌞","🌛","🌜","🌕","🌖","🌘","🌑","🌒","🌓","🌔","🌙","🌎","🌍","🌏","🪐","💫","⭐️","🌟","✨","⚡️","☄️","💥","🔥","🌪","🌈","☀️","🌤","⛅️","🌥","☁️","🌦","🌧","⛈","🌩","🌨","❄️","☃️","⛄️","🌬","💨","💧","💦","🫧","☔️","☂️","🌊","🌫","🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍓","🫐","🍈","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑","🥦","🥬","🥒","🌶","🫑","🌽","🥕","🫒","🧄","🧅","🥔","🍠","🫘","🥐","🥯","🍞","🥖","🥨","🧀","🥚","🍳","🧈","🥞","🧇","🥓","🥩","🍗","🍖","🦴","🌭","🍔","🍟","🍕","🫓","🥪","🥙","🧆","🌮","🌯","🫔","🥗","🥘","🫕","🥫","🍝","🍜","🍲","🍛","🍣","🍱","🥟","🦪","🍤","🍙","🍚","🍘","🍥","🥠","🥮","🍢","🍡","🍧","🍨","🍦","🥧","🧁","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","🌰","🥜","🍯","🥛","🍼","🫖","☕️","🍵","🧃","🥤","🧋","🫙","🍶","🍺","🍻","🥂","🍷","🫗","🥃","🍸","🍹","🧉","🍾","🧊","🥄","🍴","🍽","🥣","🥡","🥢","🧂","⚽️","🏀","🏈","⚾️","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🪃","🥅","⛳️","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸","🥌","🎿","⛷","🏂","🪂","🏋️‍♀️","🏋️","🏋️‍♂️","🤼‍♀️","🤼","🤼‍♂️","🤸‍♀️","🤸","🤸‍♂️","⛹️‍♀️","⛹️","⛹️‍♂️","🤺","🤾‍♀️","🤾","🤾‍♂️","🏌️‍♀️","🏌️","🏌️‍♂️","🏇","🧘‍♀️","🧘","🧘‍♂️","🏄‍♀️","🏄","🏄‍♂️","🏊‍♀️","🏊","🏊‍♂️","🤽‍♀️","🤽","🤽‍♂️","🚣‍♀️","🚣","🚣‍♂️","🧗‍♀️","🧗","🧗‍♂️","🚵‍♀️","🚵","🚵‍♂️","🚴‍♀️","🚴","🚴‍♂️","🏆","🥇","🥈","🥉","🏅","🎖","🏵","🎗","🎫","🎟","🎪","🤹","🤹‍♂️","🤹‍♀️","🎭","🩰","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🪘","🎷","🎺","🪗","🎸","🪕","🎻","🪈","🎲","♟","🎯","🎳","🎮","🎰","🧩","🚗","🚕","🚙","🚌","🚎","🏎","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🦽","🦼","🛴","🚲","🛵","🏍","🛺","🚨","🚔","🚍","🚘","🚖","🛞","🚡","🚠","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈️","🛫","🛬","🛩","💺","🛰","🚀","🛸","🚁","🛶","⛵️","🚤","🛥","🛳","🚢","⚓️","🛟","🪝","⛽️","🚧","🚦","🚏","🗺","🗿","🗽","🗼","🏰","🏯","🏟","🎢","🛝","🎠","⛲️","⛱","🏖","🏝","🏜","🌋","⛰","🏔","🗻","🏕","⛺️","🛖","🏠","🏡","🏘","🏚","🏗","🏭","🏢","🏬","🏣","🏤","🏥","🏪","🏫","🏩","💒","🏛","⛪️","🕌","🕍","🛕","🕋","⛩","🛤","🛣","🏞","🌅","🌄","🌠","🎇","🎆","🌇","🌆","🌃","🌁","⌚️","💻","⌨️","🖥","🖨","🖱","🖲","🕹","🗜","💽","💾","📀","📼","📷","📸","📹","🎥","📽","🎞","📞","☎️","📟","📠","📺","📻","🎙","🎚","🎛","🧭","⏱","⏲","⏰","🕰","⌛️","⏳","📡","🔋","🪫","🔌","💡","🔦","🕯","🧯","🛍️","💸","💵","💴","💶","💷","🪙","💰","💳","💎","⚖️","🪜","🧰","🪛","🔧","🔨","⚒","🛠","⛏","🪚","🔩","⚙️","🪤","🧱","⛓","🧲","🔫","💣","🧨","🪓","🔪","🗡","⚔️","🛡","🚬","🪦","⚱️","🔮","📿","🧿","🪬","💈","⚗️","🔭","🔬","🕳","🩹","🩻","🩼","💊","💉","🩸","🧬","🦠","🧫","🧪","🌡","🧹","🪠","🧺","🧻","🚽","🚰","🛁","🛀","🧼","🪥","🪒","🧽","🪣","🧴","🔑","🗝","🚪","🪑","🛋","🛏","🛌","🧸","🪆","🖼","🪞","🪟","🛍","🛒","🎁","🎈","🎏","🎀","🪄","🪅","🎊","🎉","🪩","🏮","🎐","✉️","📩","📨","📧","💌","📥","📤","📦","🏷","🪧","📪","📫","📬","📭","📮","📯","📜","📃","📄","📑","🧾","📊","📈","📉","🗒","🗓","📆","📅","🗑","🪪","📇","🗃","🗳","🗄","📋","📁","📂","🗂","🗞","📰","📓","📔","📒","📕","📗","📘","📙","📚","📖","🔖","🧷","🔗","📎","🖇","📐","📏","🧮","📌","📍","✂️","🖊","🖋","✒️","🖌","🖍","📝","✏️","🔍","🔎","🔏","🔐","🔒","🔓","❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","❤️‍🔥","❤️‍🩹","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","☮️","✝️","☪️","🕉","☸️","✡️","🔯","🕎","☯️","☦️","🛐","⛎","♈️","♉️","♊️","♋️","♌️","♍️","♎️","♏️","♐️","♑️","♒️","♓️","🆔","⚛️","🉑","☢️","☣️","📴","📳","🈶","🈚️","🈸","🈺","🈷️","✴️","🆚","💮","🉐","㊙️","㊗️","🈴","🈵","🈹","🈲","🅰️","🅱️","🆎","🆑","🅾️","🆘","❌","⭕️","🛑","⛔️","📛","🚫","💯","💢","♨️","🚷","🚯","🚳","🔞","📵","🚭","❗️","❕","❓","❔","‼️","⁉️","🔅","🔆","〽️","⚠️","🚸","🔱","⚜️","🔰","♻️","✅","🈯️","💹","❇️","✳️","❎","🌐","💠","Ⓜ️","🌀","💤","🏧","🚾","♿️","🅿️","🛗","🈳","🈂️","🛂","🛃","🛄","🛅","🚹","🚺","🚼","⚧","🚻","🚮","🎦","🛜","📶","🈁","🔣","ℹ️","🔤","🔡","🔠","🆖","🆗","🆙","🆒","🆕","🆓","0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟","🔢","#️⃣","*️⃣","⏏️","▶️","⏸","⏯","⏹","⏺","⏭","⏮","⏩","⏪","⏫","⏬","◀️","🔼","🔽","➡️","⬅️","⬆️","⬇️","↗️","↘️","↙️","↖️","↕️","↔️","↪️","↩️","⤴️","⤵️","🔀","🔁","🔂","🔄","🔃","🎵","🎶","➕","➖","➗","✖️","🟰","♾","💲","💱","™️","〰️","➰","➿","🔚","🔙","🔛","🔝","🔜","✔️","☑️","🔘","🔴","🟠","🟡","🟢","🔵","🟣","⚫️","⚪️","🟤","🔺","🔻","🔸","🔹","🔶","🔷","🔳","🔲","▪️","▫️","◾️","◽️","◼️","◻️","🟥","🟧","🟨","🟩","🟦","🟪","⬛️","⬜️","🟫","🔈","🔇","🔉","🔊","🔔","🔕","📣","📢","👁‍🗨","💬","💭","🗯","♠️","♣️","♥️","♦️","🃏","🎴","🀄️","🕐","🕑","🕒","🕓","🕔","🕕","🕖","🕗","🕘","🕙","🕚","🕛","🕜","🕝","🕞","🕟","🕠","🕡","🕢","🕣","🕤","🕥","🕦","🕧"
-  ]
-};
-
-function generateResult(array, acceptedTypes) {
-  var choice;
-
-  if (Array.isArray(array)) {
-    if (acceptedTypes) {
-      array = array.filter((it) => (acceptedTypes.indexOf(it?.type) != -1));
-    }
-    choice = array[Math.floor((Math.random()*array.length))];
-  } else {
-    choice = array;
-  }
-
-  if (typeof choice == "undefined" || choice == null) {
-    throw new Error("empty choice!");
-
-  } else if (typeof choice == "string") {
-	  return choice;
-  
-  } else if (Array.isArray(choice)) {
-    return generateResult(choice, acceptedTypes)
-
-  } else if (choice.oracle) {
-    return generateResult(oracles[choice.oracle], choice.types)
-
-  } else if (choice.value) {
-    var result = choice.value;
-    if (choice.args) {
-      var args = (Array.isArray(choice.args)? choice.args : [choice.args]);
-      for (var arg of choice.args) {
-        try {
-          var val = generateResult(arg);
-          result = result.replace("_", val);
-        } catch (e) {
-          e.message += " on \"" + result + "\"";
-          throw e;
-        }
-      }
-    }
-    return result;
-
-  } else {
-    throw new Error("unexpected choice", choice);
-  }
-}
-
-function generate() {
-  var parent = document.querySelector("#oracles");
-  
-  // clear all children & add dl element
-  parent.textContent = "";
-  const dl = document.createElement("dl");
-  parent.appendChild(dl);
-
-  console.log('# Generating results...');
-
-  for ([title, opts] of Object.entries(oracles)) {
-    if (title && title[0] != ".") {
-      const item = document.createElement("div");
-      dl.appendChild(item);
-
-      // title
-      var dt = document.createElement("dt");
-      item.appendChild(dt);
-      dt.appendChild(document.createTextNode(title));
-
-      // result
-      var dres = document.createElement("dd");
-      item.appendChild(dres);
-      try {
-        var result = generateResult(opts);
-        result = result.charAt(0).toUpperCase() + result.slice(1); // capitalize
-        dres.appendChild(document.createTextNode(result));
-        
-        console.log(title, "-", result);
-      } catch(e) {
-        console.error(title + ":", e);
-        dres.textContent = e;
-      }
-    }
-  }
-}
-
-</script>
-<style>
-body {
-  position: relative;
-  float: left;
-  width: 99%;
-  margin: auto;
-}
-h1 {
-  font-family: "NeueHammerUnziale", "Gabriola", "serif";
-  font-size: 4rem;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-}
-#parchment-background {
-  position: absolute;
-  width: 95%;
-  min-height: 99%;
-  top: 0%; left: 50%; transform: translate(-50%, 0);
-  box-shadow: 2px 3px 1rem black, 0 0 8rem #8a4d0f inset;
-  background: #fffef0;
-  filter: url(#wavyLine);
-  z-index: -50;
-}
-
-#oracles dl {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  padding: 1rem 4rem;
-}
-#oracles div {
-  font-family: "Neue Hammer Unziale", "Cambria", "serif", "Noto Color Emoji", "OpenMoji Color";
-  font-variant-emoji: emoji;
-  font-size: 2rem;
-  margin: 1rem;
-  text-align: center;
-  min-width: 20rem;
-}
-#oracles dt {
-  font-weight: bold;
-}
-#oracles dd {
-  padding: 0;
-  margin: auto;
-}
-@media screen and (min-width: 1200px) {
-  #oracles dl {
-    max-width: 124rem;
-    margin: auto;
-  }
-  #oracles div {
-    font-size: 1.5rem;
-    max-width: 45rem;
-    min-width: 25rem;
-  }
-}
-@font-face {
-  font-family: "Neue Hammer Unziale";
-  src: url("NeueHammerUnziale.woff2") format('woff2');
-}
-@font-face {
-  font-family: "OpenMoji Color";
-  size-adjust: 150%;
-  src: local("OpenMoji Color"), url("OpenMoji-Color.ttf") format("truetype");
-  font-style: Color;
-  unicode-range: U+23,U+2A,U+30-39,U+A9,U+AE,U+200D,U+203C,U+2049,U+20E3,U+2117,U+2120,U+2122,U+2139,U+2194-2199,U+21A9,U+21AA,U+229C,U+231A,U+231B,U+2328,U+23CF,U+23E9-23F3,U+23F8-23FE,U+24C2,U+25A1,U+25AA-25AD,U+25B6,U+25C0,U+25D0,U+25D1,U+25E7-25EA,U+25ED,U+25EE,U+25FB-25FE,U+2600-2605,U+260E,U+2611,U+2614,U+2615,U+2618,U+261D,U+2620,U+2622,U+2623,U+2626,U+262A,U+262E,U+262F,U+2638-263A,U+2640,U+2642,U+2648-2653,U+265F,U+2660,U+2663,U+2665,U+2666,U+2668,U+267B,U+267E,U+267F,U+2691-2697,U+2699,U+269B,U+269C,U+26A0,U+26A1,U+26A7,U+26AA,U+26AB,U+26B0,U+26B1,U+26BD,U+26BE,U+26C4,U+26C5,U+26C8,U+26CE,U+26CF,U+26D1,U+26D3,U+26D4,U+26E9,U+26EA,U+26F0-26F5,U+26F7-26FA,U+26FD,U+2702,U+2705,U+2708-270D,U+270F,U+2712,U+2714,U+2716,U+271D,U+2721,U+2728,U+2733,U+2734,U+2744,U+2747,U+274C,U+274E,U+2753-2755,U+2757,U+2763,U+2764,U+2795-2797,U+27A1,U+27B0,U+27BF,U+2934,U+2935,U+2B05-2B07,U+2B0C,U+2B0D,U+2B1B,U+2B1C,U+2B1F-2B24,U+2B2E,U+2B2F,U+2B50,U+2B55,U+2B58,U+2B8F,U+2BBA-2BBC,U+2BC3,U+2BC4,U+2BEA,U+2BEB,U+3030,U+303D,U+3297,U+3299,U+E000-E009,U+E010,U+E011,U+E040-E04B,U+E050-E058,U+E080-E0B4,U+E0C0-E0CA,U+E0FF-E10D,U+E140-E144,U+E146-E149,U+E150-E157,U+E181-E188,U+E1C0-E1C4,U+E1C6-E1D7,U+E200-E20E,U+E240-E269,U+E280-E283,U+E2C0-E2C4,U+E2C6-E2DA,U+E300-E303,U+E305-E30F,U+E312-E316,U+E318-E322,U+E324-E329,U+E32B,U+E340-E348,U+E380,U+E381,U+F000,U+F8FF,U+FE0F,U+1F004,U+1F0CF,U+1F10D-1F10F,U+1F12F,U+1F16D-1F171,U+1F17E,U+1F17F,U+1F18E,U+1F191-1F19A,U+1F1E6-1F1FF,U+1F201,U+1F202,U+1F21A,U+1F22F,U+1F232-1F23A,U+1F250,U+1F251,U+1F300-1F321,U+1F324-1F393,U+1F396,U+1F397,U+1F399-1F39B,U+1F39E-1F3F0,U+1F3F3-1F3F5,U+1F3F7-1F4FD,U+1F4FF-1F53D,U+1F549-1F54E,U+1F550-1F567,U+1F56F,U+1F570,U+1F573-1F57A,U+1F587,U+1F58A-1F58D,U+1F590,U+1F595,U+1F596,U+1F5A4,U+1F5A5,U+1F5A8,U+1F5B1,U+1F5B2,U+1F5BC,U+1F5C2-1F5C4,U+1F5D1-1F5D3,U+1F5DC-1F5DE,U+1F5E1,U+1F5E3,U+1F5E8,U+1F5EF,U+1F5F3,U+1F5FA-1F64F,U+1F680-1F6C5,U+1F6CB-1F6D2,U+1F6D5-1F6D7,U+1F6E0-1F6E5,U+1F6E9,U+1F6EB,U+1F6EC,U+1F6F0,U+1F6F3-1F6FC,U+1F7E0-1F7EB,U+1F90C-1F93A,U+1F93C-1F945,U+1F947-1F978,U+1F97A-1F9CB,U+1F9CD-1F9FF,U+1FA70-1FA74,U+1FA78-1FA7A,U+1FA80-1FA86,U+1FA90-1FAA8,U+1FAB0-1FAB6,U+1FAC0-1FAC2,U+1FAD0-1FAD6,U+1FBC5-1FBC9,U+E0061-E0067,U+E006C,U+E006E,U+E0070-E0079,U+E007F;
-}
-  </style>
-  <title>Oráculos</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/x-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><text y='15' font-size='16'>🎲</text></svg>"/>
-</head>
-
-<body onload="generate()">
-  <h1 id="reload" onclick="generate()">🎲↻ ⸺ Oráculos</h1>
-  <div id="oracles"></div>
-  <div id="parchment-background"></div>
-  <svg height="0">
-    <filter id="wavyLine">
-      <feTurbulence x="0" y="0" baseFrequency="0.02" numOctaves="5" seed="1"></feTurbulence>
-      <feDisplacementMap in="SourceGraphic" scale="20" />
-    </filter>
-  </svg>
-</body>
+            window.onload = function () {
+                loadLang(langCode);
+            };
+        </script>
+    </body>
 </html>
